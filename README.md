@@ -12,7 +12,7 @@ func-e run -c static_resource.yaml --log-level info
 curl localhost:10000 -vvv
 ```
 should response
-```bash
+```
 *   Trying 127.0.0.1:10000...
 * Connected to localhost (127.0.0.1) port 10000 (#0)
 > GET / HTTP/1.1
