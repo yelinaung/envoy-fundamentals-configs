@@ -1,0 +1,30 @@
+# Some example config from https://github.com/envoyproxy/envoy/issues/14203
+static_resources:
+  listeners:
+  - name: reply_modification
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          http_filters:
+          - name: envoy.filters.http.router
+          stat_prefix: reply_modification
+          route_config:
+            name: local
+          local_reply_config:
+            mappers:
+              - filter:
+                  status_code_filter:
+                    comparison:
+                      op: EQ
+                      value:
+                        default_value: 404
+                        runtime_key: "%RESPONSE_CODE%"
+                status_code: 503
+                body:
+                  inline_string: "Not allowed"
