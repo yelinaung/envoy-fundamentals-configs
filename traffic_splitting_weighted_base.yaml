@@ -1,11 +1,12 @@
 # 1. First start two HTTP Server in two separate terminals
 # ./start_http_server.sh 8001
 # ./start_http_server.sh 8002
+# ./start_http_server.sh 8003
 # 2. Run with enovy config with func-e
-# func-e run -c traffic_splitting_percentage_base.yaml --log-level info
+# func-e run -c traffic_splitting_weighted_base.yaml --log-level info
 static_resources:
   listeners:
-  - name: traffic_splitting_percentage_base
+  - name: traffic_splitting_weighted_base
     address:
       socket_address:
         address: 0.0.0.0
@@ -15,26 +16,27 @@ static_resources:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
-          stat_prefix: traffic_splitting_percentage_base
+          stat_prefix: traffic_splitting_weighted_base
           http_filters:
           - name: envoy.filters.http.router
           route_config:
             virtual_hosts:
             - name: hello_vhost
-              domains: ["*"]
+              domains: ["hello.io"]
               routes:
                 - match:
                     prefix: "/"
-                    runtime_fraction:
-                      default_value:
-                        numerator: 90
-                        denominator: HUNDRED
                   route:
-                    cluster: hello_v1
-                - match:
-                    prefix: "/"
-                  route:
-                    cluster: hello_v2
+                    weighted_clusters:
+                      runtime_key_prefix: routing.hello_io
+                      total_weight: 15
+                      clusters:
+                        - name: hello_v1
+                          weight: 5
+                        - name: hello_v2
+                          weight: 5
+                        - name: hello_v3
+                          weight: 5
 
   clusters:
   - name: hello_v1
@@ -59,3 +61,14 @@ static_resources:
               socket_address:
                 address: 127.0.0.1
                 port_value: 8002
+  - name: hello_v3
+    connect_timeout: 5s
+    load_assignment:
+      cluster_name: hello_world_service_v3
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8003
