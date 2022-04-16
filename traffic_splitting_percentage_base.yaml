@@ -1,0 +1,58 @@
+# RUN WITH FUNC-e
+# func-e run -c traffic_splitting_percentage_base.yaml --log-level info
+static_resources:
+  listeners:
+  - name: traffic_splitting_percentage_base
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: traffic_splitting_percentage_base
+          http_filters:
+          - name: envoy.filters.http.router
+          route_config:
+            virtual_hosts:
+            - name: hello_vhost
+              domains: ["*"]
+              routes:
+                - match:
+                    prefix: "/"
+                    runtime_fraction:
+                      default_value:
+                        numerator: 90
+                        denominator: HUNDRED
+                  route:
+                    cluster: hello_v1
+                - match:
+                    prefix: "/"
+                  route:
+                    cluster: hello_v2
+
+  clusters:
+  - name: hello_v1
+    connect_timeout: 5s
+    load_assignment:
+      cluster_name: hello_world_service_v1
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8001
+  - name: hello_v2
+    connect_timeout: 5s
+    load_assignment:
+      cluster_name: hello_world_service_v2
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 8002

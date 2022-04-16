@@ -1,0 +1,22 @@
+route_config:
+  name: my_route_config # Name used for stats, not relevant for routing
+  virtual_hosts:
+  - name: bar_vhost
+    domains: ["bar.io"]
+    routes:
+      - match:
+          prefix: "/"
+        route:
+          priority: HIGH
+          cluster: bar_io
+  - name: foo_vhost
+    domains: ["foo.io"]
+    routes:
+      - match:
+          prefix: "/"
+        route:
+          cluster: foo_io
+      - match:
+          prefix: "/api"
+        route:
+          cluster: foo_io_api
