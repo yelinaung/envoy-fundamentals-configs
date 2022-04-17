@@ -1,0 +1,47 @@
+---
+# Start the Python web server
+#   python python_web_server.py
+# Run the Envoy config with func-e
+#   func-e run --log-level info -c request_id_generation.yaml
+# Hit it!
+#   curl localhost:10000/headers -vvv
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address:
+        address: 0.0.0.0
+        port_value: 10000
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          stat_prefix: hello_world_service
+          server_name: example
+          generate_request_id: true
+          preserve_external_request_id: true
+          http_filters:
+          - name: envoy.filters.http.router
+          route_config:
+            virtual_hosts:
+            - name: hello_vhost
+              domains: ['*']
+              routes:
+              - match:
+                  prefix: /
+                route:
+                  cluster: hello
+  clusters:
+  - name: hello
+    type: STRICT_DNS
+    connect_timeout: 0.25s
+    load_assignment:
+      cluster_name: hello
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 9000
