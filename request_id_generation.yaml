@@ -32,6 +32,11 @@ static_resources:
                   prefix: /
                 route:
                   cluster: hello
+          #request_id_extension:
+            #typed_config:
+              #"@type": type.googleapis.com/envoy.extensions.request_id.uuid.v3.UuidRequestIdConfig
+              #pack_trace_reason: false
+              #use_request_id_for_trace_sampling: true
   clusters:
   - name: hello
     type: STRICT_DNS
