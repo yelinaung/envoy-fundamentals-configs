@@ -1,3 +1,4 @@
+---
 # 1. First start two HTTP Server in two separate terminals
 # ./start_http_server.sh 8001
 # ./start_http_server.sh 8002
@@ -14,46 +15,46 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: traffic_splitting_percentage_base
           http_filters:
           - name: envoy.filters.http.router
           route_config:
             response_headers_to_add:
-              - header: 
-                  key: "header_1"
-                  value: "some_value"
+            - header:
+                key: header_1
+                value: some_value
                 # If true (default) it appends the value to existing values,
                 # otherwise it replaces the existing value
-                append: false
-            response_headers_to_remove: "header_we_dont_need"
+              append: false
+            response_headers_to_remove: header_we_dont_need
             virtual_hosts:
             - name: hello_vhost
               request_headers_to_add:
-                - header: 
-                    key: "v_host_header"
-                    value: "from_v_host"
-              domains: ["*"]
+              - header:
+                  key: v_host_header
+                  value: from_v_host
+              domains: ['*']
               routes:
-                - match:
-                    prefix: "/api"
-                  route:
-                    cluster: api
-                  response_headers_to_add:
-                    - header: 
-                        key: "api_route_header"
-                        value: "api-value"
-                    - header:
-                        key: "header_1"
-                        value: "this_will_be_overwritten"
-                - match:
-                    prefix: "/"
-                  route:
-                    cluster: hello
-                  response_headers_to_add:
-                    - header: 
-                        key: "route_header"
-                        value: "%DOWNSTREAM_REMOTE_ADDRESS%"
+              - match:
+                  prefix: /api
+                route:
+                  cluster: api
+                response_headers_to_add:
+                - header:
+                    key: api_route_header
+                    value: api-value
+                - header:
+                    key: header_1
+                    value: this_will_be_overwritten
+              - match:
+                  prefix: /
+                route:
+                  cluster: hello
+                response_headers_to_add:
+                - header:
+                    key: route_header
+                    value: '%DOWNSTREAM_REMOTE_ADDRESS%'
   clusters:
   - name: hello
     connect_timeout: 5s

@@ -1,3 +1,4 @@
+---
 # Some example config from https://github.com/envoyproxy/envoy/issues/14203
 static_resources:
   listeners:
@@ -10,7 +11,7 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           http_filters:
           - name: envoy.filters.http.router
           stat_prefix: reply_modification
@@ -18,13 +19,13 @@ static_resources:
             name: local
           local_reply_config:
             mappers:
-              - filter:
-                  status_code_filter:
-                    comparison:
-                      op: EQ
-                      value:
-                        default_value: 404
-                        runtime_key: "%RESPONSE_CODE%"
-                status_code: 503
-                body:
-                  inline_string: "Not allowed"
+            - filter:
+                status_code_filter:
+                  comparison:
+                    op: EQ
+                    value:
+                      default_value: 404
+                      runtime_key: '%RESPONSE_CODE%'
+              status_code: 503
+              body:
+                inline_string: Not allowed
