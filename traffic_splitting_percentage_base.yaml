@@ -1,3 +1,4 @@
+---
 # 1. First start two HTTP Server in two separate terminals
 # ./start_http_server.sh 8001
 # ./start_http_server.sh 8002
@@ -14,27 +15,27 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: traffic_splitting_percentage_base
           http_filters:
           - name: envoy.filters.http.router
           route_config:
             virtual_hosts:
             - name: hello_vhost
-              domains: ["*"]
+              domains: ['*']
               routes:
-                - match:
-                    prefix: "/"
-                    runtime_fraction:
-                      default_value:
-                        numerator: 90
-                        denominator: HUNDRED
-                  route:
-                    cluster: hello_v1
-                - match:
-                    prefix: "/"
-                  route:
-                    cluster: hello_v2
+              - match:
+                  prefix: /
+                  runtime_fraction:
+                    default_value:
+                      numerator: 90
+                      denominator: HUNDRED
+                route:
+                  cluster: hello_v1
+              - match:
+                  prefix: /
+                route:
+                  cluster: hello_v2
 
   clusters:
   - name: hello_v1

@@ -19,14 +19,14 @@ should response
 > Host: localhost:10000
 > User-Agent: curl/7.74.0
 > Accept: */*
-> 
+>
 * Mark bundle as not supporting multiuse
 < HTTP/1.1 200 OK
 < content-length: 3
 < content-type: text/plain
 < date: Sun, 27 Mar 2022 08:40:45 GMT
 < server: envoy
-< 
+<
 * Connection #0 to host localhost left intact
 yay%
 ```

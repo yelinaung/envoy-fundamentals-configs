@@ -1,3 +1,4 @@
+---
 static_resources:
   listeners:
   - name: listener_0
@@ -9,7 +10,7 @@ static_resources:
     - filters:
       - name: envoy.filters.network.http_connection_manager
         typed_config:
-          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+          '@type': type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           stat_prefix: hello_world_service
           http_filters:
           - name: envoy.filters.http.router
@@ -17,10 +18,10 @@ static_resources:
             name: my_first_route
             virtual_hosts:
             - name: direct_response_service
-              domains: ["*"]
+              domains: ['*']
               routes:
               - match:
-                  prefix: "/"
+                  prefix: /
                 route:
                   cluster: hello_world_service
   clusters:
