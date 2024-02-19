@@ -1,5 +1,7 @@
 # Sample envoy configs
 
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/yelinaung/envoy-fundamentals-configs/master.svg)](https://results.pre-commit.ci/latest/github/yelinaung/envoy-fundamentals-configs/master)
+
 Sample configs for [Envoy Fundamentals course](https://academy.tetrate.io/courses/envoy-fundamentals)
 
 - Get [func-e](https://func-e.io/)
